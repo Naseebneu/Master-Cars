@@ -1,132 +1,182 @@
-<script>
-  // ===== Helper: Smooth scroll =====
-  function scrollToSection(id){
-    const el = document.getElementById(id);
-    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-  }
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Master Cars — Car Specs, Compare & Fuel Cost Calculator</title>
+  <meta name="description" content="Master Cars — lookup car specs, compare two models side-by-side, and calculate fuel costs. Free tools for car buyers." />
+  <meta name="keywords" content="car specs, car comparison, fuel cost calculator, car details, Master Cars" />
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 
-  // ===== Modal handler =====
-  function openModal(which){
-    const content = {
-      privacy: '<h3>Privacy Policy</h3><p class="small">Replace with your real policy.</p>',
-      terms: '<h3>Terms</h3><p class="small">Replace with your real TOS.</p>',
-      contact: '<h3>Contact</h3><p class="small">Email: <a href="mailto:admin@mastercars.example">admin@mastercars.example</a></p>'
-    };
-    const modal = document.getElementById('modal');
-    document.getElementById('modal-content').innerHTML = content[which] || '';
-    modal.style.display = 'flex';
-  }
-  function closeModal(){ document.getElementById('modal').style.display='none'; }
+  <style>
+    :root{
+      --bg:#f7f8fb;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#0b5fff;
+      --border:#e6e9ef;
+      --radius:12px;
+      --maxwidth:1100px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%; margin:0; background:var(--bg); color:#0f1724;}
+    .wrap{max-width:var(--maxwidth); margin:28px auto; padding:18px;}
+    header{display:flex;align-items:center;gap:18px; margin-bottom:18px;}
+    .brand{font-weight:700;font-size:22px;color:var(--accent);}
+    nav{margin-left:auto; display:flex; gap:10px; align-items:center;}
+    .navbtn{background:none;border:1px solid transparent;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .navbtn:hover{background:#fff; box-shadow:0 1px 4px rgba(15,23,36,0.06)}
+    .hero{background:linear-gradient(180deg,#ffffff, #fbfdff); border:1px solid var(--border); padding:18px; border-radius:var(--radius); display:flex; gap:18px; align-items:center;}
+    .hero h1{margin:0;font-size:20px;}
+    .grid{display:grid; gap:16px; margin-top:18px;}
+    @media(min-width:880px){ .grid{grid-template-columns: 1fr 1fr; } }
+    .card{background:var(--card); border:1px solid var(--border); padding:16px; border-radius:12px; box-shadow: 0 6px 18px rgba(11,95,255,0.02);}
+    label{display:block;font-size:13px;color:var(--muted); margin-bottom:6px;}
+    input[type="text"], input[type="number"], select{width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--border); box-sizing:border-box;}
+    button.primary{background:var(--accent); color:white; border:none; padding:10px 12px;border-radius:8px;cursor:pointer;margin-top:8px;}
+    button.ghost{background:transparent;border:1px solid var(--border);padding:8px 10px;border-radius:8px;cursor:pointer;}
+    .small{font-size:13px;color:var(--muted);}
+    .result{margin-top:12px;padding:12px;border-radius:8px;background:#fbfdff;border:1px solid #eef5ff;}
+    table{width:100%; border-collapse:collapse;}
+    th,td{padding:8px 6px;text-align:left;border-bottom:1px solid #f1f4f9;font-size:14px;}
+    .compareTable th{background:#fafbfd;font-weight:600;}
+    .ads{margin:12px 0;padding:12px;border-radius:12px;border:1px dashed #dbeafe;text-align:center;color:#1e293b;}
+    footer{margin-top:18px;padding:12px;text-align:center;color:var(--muted);font-size:13px;}
+    .link{color:var(--accent); text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">Master Cars</div>
+      <div class="small">Car Specs · Compare · Fuel Cost</div>
+      <nav>
+        <button class="navbtn" onclick="scrollToSection('car-info')">Car Info</button>
+        <button class="navbtn" onclick="scrollToSection('compare')">Compare</button>
+        <button class="navbtn" onclick="scrollToSection('fuel')">Fuel Cost</button>
+      </nav>
+    </header>
 
-  // ===== JSONP fetch =====
-  function jsonpCarQuery(url){
-    return new Promise((resolve,reject)=>{
-      const cbName = 'cqcb_'+Math.random().toString(36).substr(2,8);
-      const script = document.createElement('script');
-      script.src = url + '&callback=' + cbName;
-      script.onerror = ()=>{ reject('JSONP failed'); };
-      window[cbName] = function(data){
-        resolve(data);
-        delete window[cbName];
-        if(script.parentNode) script.parentNode.removeChild(script);
-      };
-      document.body.appendChild(script);
-    });
-  }
+    <section class="hero card">
+      <div style="flex:1">
+        <h1>Free Car Tools — find specs, compare models, and estimate fuel cost</h1>
+        <p class="small">Fast, mobile-friendly tools to help buyers and car enthusiasts. Ad placeholders included.</p>
+      </div>
+      <div style="min-width:200px;text-align:right">
+        <div class="ads">Top Ad placeholder</div>
+      </div>
+    </section>
 
-  // ===== Fetch car info =====
-  async function fetchCarInfo(){
-    const make=document.getElementById('ci-make').value.trim();
-    const model=document.getElementById('ci-model').value.trim();
-    const out=document.getElementById('car-info-result');
-    out.style.display='block';
-    if(!make||!model){ out.innerHTML='<span style="color:#b91c1c">Enter both make and model.</span>'; return;}
-    out.innerHTML='<em>Loading car data…</em>';
+    <div class="grid">
+      <!-- CAR INFORMATION -->
+      <div id="car-info" class="card">
+        <h2>1. Car Information</h2>
+        <p class="small">Enter a make and model to fetch specs (CarQuery API).</p>
+        <label for="ci-make">Make (brand)</label>
+        <input type="text" id="ci-make" placeholder="e.g. Toyota">
+        <label for="ci-model" style="margin-top:10px">Model</label>
+        <input type="text" id="ci-model" placeholder="e.g. Corolla">
+        <div style="display:flex;gap:8px">
+          <button class="primary" onclick="fetchCarInfo()">Get Car Info</button>
+          <button class="ghost" onclick="clearCarInfo()">Clear</button>
+        </div>
+        <div id="car-info-result" class="result" style="display:none"></div>
+      </div>
 
-    try{
-      const data = await jsonpCarQuery(`https://www.carqueryapi.com/api/0.3/?cmd=getTrims&make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}`);
-      if(!data?.Trims?.length){ out.innerHTML='<span class="small">No data found.</span>'; return;}
-      const t = data.Trims.sort((a,b)=>(b.model_year||0)-(a.model_year||0))[0];
-      const specs={
-        'Make': t.make_display||make,
-        'Model': t.model_name||model,
-        'Year': t.model_year||'—',
-        'Body': t.model_body||'—',
-        'Engine Type': t.model_engine_type||'—',
-        'Cylinders': t.model_engine_cyl||'—',
-        'Displacement (cc)': t.model_engine_cc||'—',
-        'Power (hp)': t.model_engine_power_ps||'—',
-        'Torque (Nm)': t.model_engine_torque_nm||'—',
-        'Transmission': t.model_transmission_type||'—',
-        'Fuel Type': t.model_engine_fuel||'—',
-        'Doors': t.model_doors||'—',
-        'Seats': t.model_seats||'—'
-      };
-      let html=`<strong>${specs.Make} ${specs.Model} — ${specs.Year}</strong><table style="margin-top:8px">`;
-      for(const k in specs) html+=`<tr><th style="width:40%">${k}</th><td>${specs[k]}</td></tr>`;
-      html+='</table><div class="small" style="margin-top:8px">Source: CarQuery API</div>';
-      out.innerHTML=html;
-    } catch(err){ console.error(err); out.innerHTML='<span style="color:#b91c1c">Error fetching data.</span>'; }
-  }
+      <!-- COMPARE -->
+      <div id="compare" class="card">
+        <h2>2. Compare Two Cars</h2>
+        <p class="small">Type two make & model pairs and click Compare.</p>
+        <label>Car 1 — Make</label>
+        <input type="text" id="cmp-make1" placeholder="e.g. Toyota">
+        <label style="margin-top:8px">Car 1 — Model</label>
+        <input type="text" id="cmp-model1" placeholder="e.g. Corolla">
+        <div style="height:10px"></div>
+        <label>Car 2 — Make</label>
+        <input type="text" id="cmp-make2" placeholder="e.g. Honda">
+        <label style="margin-top:8px">Car 2 — Model</label>
+        <input type="text" id="cmp-model2" placeholder="e.g. Civic">
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="primary" onclick="compareCars()">Compare</button>
+          <button class="ghost" onclick="clearCompare()">Clear</button>
+        </div>
+        <div id="compare-result" class="result" style="display:none; overflow:auto; margin-top:12px"></div>
+      </div>
 
-  function clearCarInfo(){ ['ci-make','ci-model'].forEach(id=>document.getElementById(id).value=''); const out=document.getElementById('car-info-result'); out.style.display='none'; out.innerHTML=''; }
+      <!-- FUEL COST -->
+      <div id="fuel" class="card" style="grid-column: 1 / -1;">
+        <h2>3. Fuel Cost Calculator</h2>
+        <p class="small">Estimate fuel cost for a trip or monthly driving.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr; gap:8px">
+          <div>
+            <label>Distance (km)</label>
+            <input type="number" id="fc-distance" placeholder="e.g. 150">
+          </div>
+          <div>
+            <label>Car Fuel Efficiency (km per litre)</label>
+            <input type="number" id="fc-efficiency" placeholder="e.g. 12">
+          </div>
+          <div>
+            <label>Fuel Price (per litre)</label>
+            <input type="number" id="fc-price" placeholder="e.g. 1.25">
+          </div>
+          <div>
+            <label>Number of Trips / Months</label>
+            <input type="number" id="fc-mult" value="1" min="1">
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px">
+          <button class="primary" onclick="calcFuel()">Calculate Cost</button>
+          <button class="ghost" onclick="clearFuel()">Clear</button>
+        </div>
+        <div id="fuel-result" class="result" style="display:none"></div>
+      </div>
 
-  // ===== Compare cars =====
-  async function compareCars(){
-    const make1=document.getElementById('cmp-make1').value.trim();
-    const model1=document.getElementById('cmp-model1').value.trim();
-    const make2=document.getElementById('cmp-make2').value.trim();
-    const model2=document.getElementById('cmp-model2').value.trim();
-    const out=document.getElementById('compare-result');
-    out.style.display='block';
-    if(!make1||!model1||!make2||!model2){ out.innerHTML='<span style="color:#b91c1c">Fill all fields.</span>'; return;}
-    out.innerHTML='<em>Loading comparison…</em>';
+      <!-- Mid page ad -->
+      <div class="card" style="grid-column: 1 / -1; text-align:center;">
+        <div class="ads">Mid-page Ad placeholder</div>
+      </div>
+    </div>
 
-    try{
-      const [d1,d2] = await Promise.all([
-        jsonpCarQuery(`https://www.carqueryapi.com/api/0.3/?cmd=getTrims&make=${encodeURIComponent(make1)}&model=${encodeURIComponent(model1)}`),
-        jsonpCarQuery(`https://www.carqueryapi.com/api/0.3/?cmd=getTrims&make=${encodeURIComponent(make2)}&model=${encodeURIComponent(model2)}`)
-      ]);
-      if(!d1?.Trims?.length || !d2?.Trims?.length){ out.innerHTML='<span class="small">Models not found.</span>'; return;}
-      const t1=d1.Trims.sort((a,b)=>(b.model_year||0)-(a.model_year||0))[0];
-      const t2=d2.Trims.sort((a,b)=>(b.model_year||0)-(a.model_year||0))[0];
-      const fields=[
-        ['Make',t1.make_display||'—',t2.make_display||'—'],
-        ['Model',t1.model_name||'—',t2.model_name||'—'],
-        ['Year',t1.model_year||'—',t2.model_year||'—'],
-        ['Body',t1.model_body||'—',t2.model_body||'—'],
-        ['Engine (cc)',t1.model_engine_cc||'—',t2.model_engine_cc||'—'],
-        ['Power (hp)',t1.model_engine_power_ps||'—',t2.model_engine_power_ps||'—'],
-        ['Torque (Nm)',t1.model_engine_torque_nm||'—',t2.model_engine_torque_nm||'—'],
-        ['Fuel',t1.model_engine_fuel||'—',t2.model_engine_fuel||'—'],
-        ['Transmission',t1.model_transmission_type||'—',t2.model_transmission_type||'—'],
-        ['Doors',t1.model_doors||'—',t2.model_doors||'—'],
-        ['Seats',t1.model_seats||'—',t2.model_seats||'—']
-      ];
-      let html=`<table class="compareTable"><thead><tr><th></th><th>${t1.make_display||make1} ${t1.model_name||model1}</th><th>${t2.make_display||make2} ${t2.model_name||model2}</th></tr></thead><tbody>`;
-      fields.forEach(([label,v1,v2])=>html+=`<tr><th>${label}</th><td>${v1}</td><td>${v2}</td></tr>`);
-      html+='</tbody></table><div class="small" style="margin-top:8px">Source: CarQuery API</div>';
-      out.innerHTML=html;
-    }catch(err){ console.error(err); out.innerHTML='<span style="color:#b91c1c">Error fetching comparison.</span>'; }
-  }
+    <footer>
+      <div style="max-width:900px;margin:0 auto">
+        <div style="display:flex;gap:12px;justify-content:center;margin-bottom:8px">
+          <a class="link" href="#" onclick="openModal('privacy')">Privacy Policy</a>
+          <a class="link" href="#" onclick="openModal('terms')">Terms</a>
+          <a class="link" href="#" onclick="openModal('contact')">Contact</a>
+        </div>
+        <div class="small">© <strong>Master Cars</strong> — Built for car buyers and enthusiasts.</div>
+      </div>
+    </footer>
+  </div>
 
-  function clearCompare(){ ['cmp-make1','cmp-model1','cmp-make2','cmp-model2'].forEach(id=>document.getElementById(id).value=''); const out=document.getElementById('compare-result'); out.style.display='none'; out.innerHTML=''; }
+  <div style="max-width:var(--maxwidth);margin:0 auto;padding:8px 18px;">
+    <div class="ads">Footer Ad placeholder</div>
+  </div>
 
-  // ===== Fuel calculator =====
-  function calcFuel(){
-    const d=parseFloat(document.getElementById('fc-distance').value);
-    const eff=parseFloat(document.getElementById('fc-efficiency').value);
-    const price=parseFloat(document.getElementById('fc-price').value);
-    const mult=parseFloat(document.getElementById('fc-mult').value)||1;
-    const out=document.getElementById('fuel-result');
-    out.style.display='block';
-    if(!d||!eff||!price){ out.innerHTML='<span style="color:#b91c1c">Fill all fields.</span>'; return;}
-    const litres=d/eff;
-    const cost=litres*price*mult;
-    out.innerHTML=`<div><strong>Fuel needed:</strong> ${litres.toFixed(2)} L</div>
-                   <div style="margin-top:6px"><strong>Total cost:</strong> ${cost.toFixed(2)}</div>
-                   <div class="small" style="margin-top:6px">Approximation only.</div>`;
-  }
+  <!-- Modal -->
+  <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(7,12,21,0.55);align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:12px;max-width:760px;padding:18px;margin:18px;border:1px solid var(--border);">
+      <div id="modal-content"></div>
+      <div style="text-align:right;margin-top:12px"><button class="ghost" onclick="closeModal()">Close</button></div>
+    </div>
+  </div>
 
-  function clearFuel(){ ['fc-distance','fc-efficiency','fc-price'].forEach(id=>document.getElementById(id).value=''); document.getElementById('fc-mult').value='1'; const out=document.getElementById('fuel-result'); out.style.display='none'; out.innerHTML=''; }
-</script>
+  <!-- ===== Fixed JS ===== -->
+  <script>
+    // --- smooth scroll
+    function scrollToSection(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); }
+
+    // --- modal
+    function openModal(which){
+      const c={privacy:'<h3>Privacy Policy</h3><p class="small">Replace with your real policy.</p>',
+               terms:'<h3>Terms</h3><p class="small">Replace with your real TOS.</p>',
+               contact:'<h3>Contact</h3><p class="small">Email: <a href="mailto:admin@mastercars.example">admin@mastercars.example</a></p>'};
+      document.getElementById('modal-content').innerHTML=c[which]||'';
+      document.getElementById('modal').style.display='flex';
+    }
+    function closeModal(){ document.getElementById('modal').style.display='none'; }
+
+    // --- JSONP
+    function jsonpCarQuery(url){
+      return new Promise((
